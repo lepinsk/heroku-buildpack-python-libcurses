@@ -1,0 +1,28 @@
+#!/bin/sh
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+BUILD_DIR=$1
+VENDOR_DIR="vendor"
+
+echo "-----> lepinsk/heroku-test-buildpack"
+
+echo "Creating startup script to prepend new python bin dir to path" | indent
+PROFILED_PATH_PYTHON="$BUILD_DIR/.profile.d/defaultpython.sh"
+echo "Creating python .profile.d script" | indent
+mkdir -p -v $(dirname $PROFILED_PATH_PYTHON)
+echo 'export PATH="$HOME/vendor/python-bin:$PATH"' >> $PROFILED_PATH_PYTHON
+echo "Created new profile.d script at $PROFILED_PATH_PYTHON" | indent
+
+echo "Creating python→python2.7 symlink" | indent
+PYTHON_SYMLINK_LOCATION="$BUILD_DIR/vendor/python-bin/python"
+mkdir -p -v $(dirname $PYTHON_SYMLINK_LOCATION)
+ln -s $HOME/.apt/usr/bin/python2.7 $PYTHON_SYMLINK_LOCATION
+echo "Created python symlink at $PYTHON_SYMLINK_LOCATION" | indent
+
+echo "Creating startup script to add libncurses.so.5 to LIBRARY_PATH" | indent
+PROFILED_PATH_LIBNCURSES="$BUILD_DIR/.profile.d/libncurses.sh"
+mkdir -p $(dirname $PROFILED_PATH_LIBNCURSES)
+echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/.apt/lib/x86_64-linux-gnu"' >> $PROFILED_PATH_LIBNCURSES

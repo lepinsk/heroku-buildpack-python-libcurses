@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -x "$(command -v python2.7)" ]; then
+	echo "Python 2.7"
+	exit 0
+else 
+	exit 1
+fi
